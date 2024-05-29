@@ -1,8 +1,9 @@
 import pygame
 import random
 import time
-import datetime
 
+import globals
+import Game
 from Button import Button
 from Coin import Coin
 from Asteroid import Asteroid
@@ -13,20 +14,7 @@ aHit = {0: [67, 88, 13, 3], 1: [48, 62, 9, 2], 2: [81, 81, 9, 6], 3: [49, 49, 4,
         4: [81, 105, 0, 0], 5: [40, 53, 0, 0], 6: [49, 40, 24, 9]}
 costs = [5, 10, 15, 20, 25]
 
-pygame.init()
-
 win = pygame.display.set_mode((1000, 600))
-pygame.display.set_caption("Asteroids")
-
-asteroids = [pygame.image.load('Pictures/Asteroid11.png'), pygame.image.load('Pictures/Asteroid12.png'),
-             pygame.image.load('Pictures/Asteroid21.png'), pygame.image.load('Pictures/Asteroid22.png'),
-             pygame.image.load('Pictures/Asteroid31.png'), pygame.image.load('Pictures/Asteroid32.png'),
-             pygame.image.load('Pictures/Asteroid42.png')]
-ship = pygame.image.load('Pictures/fighter.png')
-logo = pygame.image.load('Pictures/Logo.png')
-coin = pygame.image.load('Pictures/coin.png')
-bg = pygame.image.load('Pictures/space.png')
-
 
 clock = pygame.time.Clock()
 font = pygame.font.SysFont('comicsans', 50, True)
@@ -48,9 +36,6 @@ screenAsteroids = []
 screenCoins = []
 screenlaser = []
 now1 = time.time()
-bscore = 0
-score = 0
-coins = 100
 spawnLoop = 0
 spawnLoop1 = 0
 spawnLoop2 = 0
@@ -68,7 +53,7 @@ stary = []
 
 #//////////////////////////////////////////////////////////////////////////functions
 def drawGameWin():
-    win.blit(bg, (0, 0))
+    win.blit(globals.BACKGROUND_IMAGE, (0, 0))
     user.draw(win)
     for asteroid in screenAsteroids:
         asteroid.draw(win)
@@ -78,11 +63,11 @@ def drawGameWin():
 
     for laser in screenlaser:
         laser.draw(win)
-    text = font.render('Coins: ' + str(coins), 1, (255, 255, 255))
+    text = font.render('Coins: ' + str(globals.USER_COIN_COUNT), 1, (255, 255, 255))
     win.blit(text, (795, 70))
-    text1 = sfont.render('Score: ' + str(score), 1, (255, 255, 255))
+    text1 = sfont.render('Score: ' + str(globals.USER_SCORE), 1, (255, 255, 255))
     win.blit(text1, (795, 10))
-    btext = bfont.render('Best Score: ' + str(bscore), 1, (255, 255, 255))
+    btext = bfont.render('Best Score: ' + str(globals.USER_BEST_SCORE), 1, (255, 255, 255))
     win.blit(btext, (700, 130))
 
     pygame.display.update()
@@ -94,10 +79,10 @@ def Screen1():
         pygame.draw.circle(win, (255, 255, 255), (starx[i], stary[i]), 1)
     button1.draw(win)
     button2.draw(win)
-    btext2 = bfont2.render('Best Score: ' + str(bscore), 1, (255, 255, 255))
+    btext2 = bfont2.render('Best Score: ' + str(globals.USER_BEST_SCORE), 1, (255, 255, 255))
     win.blit(btext2, (700, 10))
-    win.blit(logo, (136, 180))
-    displaycoins = bfont2.render('Coins: ' + str(coins), 1, (255, 255, 255))
+    win.blit(globals.LOGO_IMAGE, (136, 180))
+    displaycoins = bfont2.render('Coins: ' + str(globals.USER_COIN_COUNT), 1, (255, 255, 255))
     win.blit(displaycoins, (700, 40))
 
 def Store():
@@ -137,7 +122,7 @@ def Store():
         for i in range(5):
             pygame.draw.line(win, (0, 0, 0), (600 + 50 * i, 111 + 142 + 163 * x), (600 + 50 * i, 111 + 85 + 163 * x), 3)
             pygame.draw.line(win, (0, 0, 0), (100 + 50*i, 111 + 142 + 163*x), (100 + 50*i, 111 + 85 + 163*x), 3)
-    cointxt = bigfont.render('Coins: ' + str(coins), 1, (255, 255, 255))
+    cointxt = bigfont.render('Coins: ' + str(globals.USER_COIN_COUNT), 1, (255, 255, 255))
     speedtxt = bigfont.render('Speed', 1, (255, 255, 255))
     bspeedtxt = bigfont.render('Bullet Speed', 1, (255, 255, 255))
     bdmgtxt  = bigfont.render('Bullet Damage', 1, (255, 255, 255))
@@ -219,9 +204,9 @@ while game:
                     if time.time() - now2 > .2:
                         clicked = 0
                 if upgrade == True:
-                    if coins >= costs[speedbar]:
+                    if globals.USER_COIN_COUNT >= costs[speedbar]:
                         speed += 3
-                        coins -= costs[speedbar]
+                        globals.USER_COIN_COUNT -= costs[speedbar]
                         speedbar += 1
                     upgrade = False
         if bspeedbar < 5:
@@ -235,9 +220,9 @@ while game:
                     if time.time() - now2 > .2:
                         clicked = 0
                 if bupgrade == True:
-                    if coins >= costs[bspeedbar]:
+                    if globals.USER_COIN_COUNT >= costs[bspeedbar]:
                         bspeed += 10
-                        coins -= costs[bspeedbar]
+                        globals.USER_COIN_COUNT -= costs[bspeedbar]
                         bspeedbar += 1
                     bupgrade = False
         Store()
@@ -269,7 +254,7 @@ while game:
             user.y -= user.vel
 
         buttonProp(button1)
-        win.blit(bg, (0, 0))
+        win.blit(globals.BACKGROUND_IMAGE, (0, 0))
         drawGameWin()
 
 
@@ -325,15 +310,15 @@ while game:
         counter = 0
         for money in screenCoins:
             if user.x < money.x +7.5 < user.x +75 and user.y + 2.5 < money.y + 7.5 < user.y + 75:
-                coins += 1
-                score += 1
+                globals.USER_COIN_COUNT += 1
+                globals.USER_SCORE += 1
                 screenCoins.pop(screenCoins.index(money))
         for asteroid in screenAsteroids:
             for laser in screenlaser:
                 if asteroid.x + aHit[asteroid.chose][2] < laser.x < asteroid.x + aHit[asteroid.chose][2] + aHit[asteroid.chose][0]:
                     if asteroid.y + aHit[asteroid.chose][3] < laser.y < asteroid.y + aHit[asteroid.chose][3] +  aHit[asteroid.chose][1]:
                         screenlaser.pop(screenlaser.index(laser))
-                        score += 5
+                        globals.USER_SCORE += 5
                         try:
                             screenAsteroids.pop(screenAsteroids.index(asteroid))
                         except ValueError:
@@ -341,9 +326,9 @@ while game:
         for asteroid in screenAsteroids:
             if asteroid.x + aHit[asteroid.chose][2] < user.x < asteroid.x + aHit[asteroid.chose][2] + aHit[asteroid.chose][0] or asteroid.x + aHit[asteroid.chose][2] < user.x + 75< asteroid.x + aHit[asteroid.chose][2] + aHit[asteroid.chose][0]:
                 if asteroid.y + aHit[asteroid.chose][3] < user.y + 59.5< asteroid.y + aHit[asteroid.chose][3] + aHit[asteroid.chose][1] or asteroid.y + aHit[asteroid.chose][3] < user.y + 75 < asteroid.y + aHit[asteroid.chose][3] + aHit[asteroid.chose][1]:
-                    if score > bscore:
-                        bscore = score
-                    score = 0
+                    if globals.USER_SCORE > globals.USER_BEST_SCORE:
+                        globals.USER_BEST_SCORE = globals.USER_SCORE
+                    globals.USER_SCORE = 0
                     screenAsteroids = []
                     screenCoins = []
                     screenlaser = []
@@ -360,9 +345,9 @@ while game:
                     screen1 = True
             elif asteroid.x + aHit[asteroid.chose][2] < user.x + 27.5 < asteroid.x + aHit[asteroid.chose][2] + aHit[asteroid.chose][0] or asteroid.x + aHit[asteroid.chose][2] < user.x + 47.5 < asteroid.x + aHit[asteroid.chose][2] + aHit[asteroid.chose][0]:
                 if asteroid.y + aHit[asteroid.chose][3] < user.y + 2.5 < asteroid.y + aHit[asteroid.chose][3] + aHit[asteroid.chose][1] or asteroid.y + aHit[asteroid.chose][3] < user.y + 75 < asteroid.y + aHit[asteroid.chose][3] + aHit[asteroid.chose][1]:
-                    if score > bscore:
-                        bscore = score
-                    score = 0
+                    if globals.USER_SCORE > globals.USER_BEST_SCORE:
+                        globals.USER_BEST_SCORE = globals.USER_SCORE
+                    globals.USER_SCORE = 0
                     screenAsteroids = []
                     screenCoins = []
                     screenlaser = []
@@ -381,5 +366,12 @@ while game:
         clock.tick(100)
 
 
-
 pygame.quit()
+
+
+def main():
+    print("hello")
+    return 0
+
+if __name__ == '__main__':
+    main()
