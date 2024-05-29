@@ -84,7 +84,6 @@ def Screen1():
 def Store():
     user.vel = 8
     bigfont = pygame.font.SysFont('comicsans', 50, True)
-    smallfont = pygame.font.SysFont('comicsans', 20)
     win.fill((139, 134, 130))
     Game.BACK_BUTTON.draw(win)
     for p in range(3):
@@ -104,7 +103,6 @@ def Store():
         upgradespeed.text = "MAX"
         upgradespeed.draw(win)
     #bspeed bar
-
     if (bspeed - 20)/10 <= 5:
         pygame.draw.rect(win, (0, 191, 255), (50, 111 + 85*3-7, (bspeed - 20)/10 * 50, 57))
         upgradebspeed.draw(win)
@@ -158,14 +156,14 @@ for i in range(200):
     y = random.randint(0, 600)
     stary.append(y)
 #///////////////////////////////////////////////////////////////////main
-while game:
+while Game.CURRENT_STATE != globals.GAME_QUIT:
     pygame.time.delay(25)
-    while screen1:
+    while Game.CURRENT_STATE == globals.HOME_STATE:
         pygame.time.delay(25)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                screen1 = False
-                game = False
+                Game.CURRENT_STATE = globals.GAME_QUIT
+                break
         pos = pygame.mouse.get_pos()
 
         loop(spawnLoop)
@@ -180,15 +178,11 @@ while game:
         buttonProp(Game.STORE_BUTTON)
         if event.type == pygame.MOUSEBUTTONDOWN:
             if Game.PLAY_BUTTON.isPressed(pos):
-                run = True
-                screen1 = False
-                store = False
+                Game.CURRENT_STATE = globals.GAME_STATE
             if Game.STORE_BUTTON.isPressed(pos):
-                store = True
-                screen1 = False
-                run = False
+                Game.CURRENT_STATE = globals.STORE_STATE
         pygame.display.update()
-    while store:
+    while Game.CURRENT_STATE == globals.STORE_STATE:
         if speedbar < 5:
             upgradespeed = Button((124, 252, 0), 350, 111, 100, 142, "Cost: " + str(globals.ATTRIBUTE_UPGRADE_COSTS[speedbar]), 30)
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -222,22 +216,20 @@ while game:
                         bspeedbar += 1
                     bupgrade = False
         Store()
+        pos = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                store = False
-                game = False
-        pos = pygame.mouse.get_pos()
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if Game.BACK_BUTTON.isPressed(pos):
-                store = False
-                screen1 = True
-                run = False
-    while run:
+                Game.CURRENT_STATE = globals.GAME_QUIT
+                break
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if Game.BACK_BUTTON.isPressed(pos):
+                    Game.CURRENT_STATE = globals.HOME_STATE
+    while Game.CURRENT_STATE == globals.GAME_STATE:
         pygame.time.delay(25)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
-                game = False
+                Game.CURRENT_STATE = globals.GAME_QUIT
+                break
         user.vel = speed
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT] and user.x + user.vel < 935:
@@ -254,17 +246,17 @@ while game:
         drawGameWin()
 
 
-        if magcounter < user.magsize:
+        if magcounter < user.magSize:
             pygame.draw.rect(win, (0, 0, 0), (10, 560, 100, 20))
-            if 1 - magcounter/user.magsize >= 0:
+            if 1 - magcounter/user.magSize >= 0:
                 color = (255, 0, 0)
-                if 1 - magcounter/user.magsize >= .33:
+                if 1 - magcounter/user.magSize >= .33:
                     color = (255, 215, 0)
-                    if 1 - magcounter/user.magsize >= .54:
+                    if 1 - magcounter/user.magSize >= .54:
                         color = (173, 255, 47)
-                        if 1 - magcounter/user.magsize >= .75:
+                        if 1 - magcounter/user.magSize >= .75:
                             color = (0, 255, 0)
-            pygame.draw.rect(win, color, (10, 560, (1 - magcounter/user.magsize) * 100, 20))
+            pygame.draw.rect(win, color, (10, 560, (1 - magcounter/user.magSize) * 100, 20))
             pygame.display.update()
             if keys[pygame.K_SPACE]:
                 now2 = time.time()
@@ -337,8 +329,7 @@ while game:
                     while time.time() < future:
                         win.blit(text2, (300, 300))
                         pygame.display.update()
-                    run = False
-                    screen1 = True
+                    Game.CURRENT_STATE = globals.HOME_STATE
             elif asteroid.x + aHit[asteroid.chose][2] < user.x + 27.5 < asteroid.x + aHit[asteroid.chose][2] + aHit[asteroid.chose][0] or asteroid.x + aHit[asteroid.chose][2] < user.x + 47.5 < asteroid.x + aHit[asteroid.chose][2] + aHit[asteroid.chose][0]:
                 if asteroid.y + aHit[asteroid.chose][3] < user.y + 2.5 < asteroid.y + aHit[asteroid.chose][3] + aHit[asteroid.chose][1] or asteroid.y + aHit[asteroid.chose][3] < user.y + 75 < asteroid.y + aHit[asteroid.chose][3] + aHit[asteroid.chose][1]:
                     if globals.CURRENT_SCORE > globals.CURRENT_BEST_SCORE:
@@ -356,11 +347,8 @@ while game:
                     while time.time() < future:
                         win.blit(text2, (300, 300))
                         pygame.display.update()
-                    run = False
-                    screen1 = True
-
+                    Game.CURRENT_STATE = globals.HOME_STATE
         clock.tick(100)
-
 
 pygame.quit()
 

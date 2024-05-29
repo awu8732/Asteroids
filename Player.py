@@ -7,7 +7,7 @@ class Player:
         self.y = y
         self.vel = vel
         self.hitbox = ((20, 72.5), (75, 18))
-        self.magsize = 20
+        self.magSize = 20
     def draw(self, win):
         win.blit(globals.FIGHTER_IMAGE, (self.x, self.y))
         #pygame.draw.rect(win, (0, 255, 0), (self.x, self.y + 59.5, 75, 15.5), 1)

@@ -1,5 +1,6 @@
 import globals
 import pygame
+import time
 
 from Button import Button
 
@@ -20,6 +21,7 @@ def initializeGameObjects():
 def initializeGameVariables():
     global CURRENT_STATE
     CURRENT_STATE = globals.HOME_STATE
+
 
 initializeGame()
 
