@@ -2,11 +2,12 @@ import pygame
 import random
 import time
 import datetime
-from Classes import Button
-from Classes import Asteroid
-from Classes import Coin
-from Classes import Lasers
-from Classes import Ship
+
+from Button import Button
+from Coin import Coin
+from Asteroid import Asteroid
+from Laser import Laser
+from Player import Player
 
 aHit = {0: [67, 88, 13, 3], 1: [48, 62, 9, 2], 2: [81, 81, 9, 6], 3: [49, 49, 4, 6],
         4: [81, 105, 0, 0], 5: [40, 53, 0, 0], 6: [49, 40, 24, 9]}
@@ -35,7 +36,7 @@ rfont = pygame.font.SysFont('comicsans', 10)
 bfont = pygame.font.SysFont('comicsans', 50, True)
 bfont2 = pygame.font.SysFont('comicsans', 25, True)
 text2 = dfont.render('YOU DIED!', 1, (139, 0, 0))
-user = Ship(400, 250, 24)
+user = Player(400, 250, 24)
 screen1 = True
 store = False
 run = False
@@ -286,8 +287,8 @@ while game:
             pygame.display.update()
             if keys[pygame.K_SPACE]:
                 now2 = time.time()
-                screenlaser.append(Lasers(user.x + 18.5, user.y + 57))
-                screenlaser.append(Lasers(user.x + 58.5, user.y + 57))
+                screenlaser.append(Laser(user.x + 18.5, user.y + 57))
+                screenlaser.append(Laser(user.x + 58.5, user.y + 57))
                 now1 = time.time()
                 magcounter += 2
         else:
