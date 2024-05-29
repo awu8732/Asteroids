@@ -1,10 +1,18 @@
 import pygame
 
-USER_BEST_SCORE = 0
-USER_SCORE = 0
-USER_COIN_COUNT = 100
+#===================== GAME VARIABLES =====================
+GAME_QUIT = -1
+GAME_STATE = 0
+HOME_STATE = 1
+STORE_STATE = 2
 
-#================= IMAGE PATHS =================
+CURRENT_BEST_SCORE = 0
+CURRENT_SCORE = 0
+CURRENT_COIN_COUNT = 100
+
+ATTRIBUTE_UPGRADE_COSTS = [5, 10, 15, 20, 25]
+
+#===================== IMAGE PATHS =====================
 ASTEROID_IMAGE_PATHS = ['Pictures/Asteroid11.png', 'Pictures/Asteroid12.png',
                         'Pictures/Asteroid21.png', 'Pictures/Asteroid12.png', 
                         'Pictures/Asteroid31.png', 'Pictures/Asteroid12.png', 
@@ -14,7 +22,7 @@ LOGO_IMAGE_PATH = 'Pictures/Logo.png'
 COIN_IMAGE_PATH = 'Pictures/coin.png'
 BACKGROUND_IMAGE_PATH = 'Pictures/space.png'
 
-#================= INITIALIZE IMAGES =================
+#===================== INITIALIZE IMAGES =====================
 ASTEROID_IMAGES = []
 for ASTEROID_PATH in ASTEROID_IMAGE_PATHS:
     ASTEROID_IMAGES.append(pygame.image.load(ASTEROID_PATH))
