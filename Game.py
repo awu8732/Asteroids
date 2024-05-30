@@ -5,6 +5,10 @@ import time
 from Button import Button
 from Player import Player
 
+#=============================================================================================
+#==================================== GAME INITIALIZATION ====================================
+#=============================================================================================
+
 def initializeGame():
     pygame.init()
     pygame.display.set_caption("Asteroids")
@@ -32,6 +36,10 @@ def initializeGameObjects():
 def initializeGameVariables():
     global CURRENT_STATE
     CURRENT_STATE = globals.HOME_STATE
+
+#=============================================================================================
+#======================================= GAME HELPERS =======================================
+#=============================================================================================
 
 def pauseScreen(interval = 2):
     goal = time.time() + interval

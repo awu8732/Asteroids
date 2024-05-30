@@ -26,7 +26,7 @@ text2 = dfont.render('YOU DIED!', 1, (139, 0, 0))
 now1 = time.time()
 clicked = 0
 speed = 8
-bspeed = 30
+laserSpeed = 30
 speedbar = 0
 bspeedbar = 0
 upgrade = False
@@ -87,8 +87,8 @@ def Store():
         upgradespeed.text = "MAX"
         upgradespeed.draw(win)
     #bspeed bar
-    if (bspeed - 20)/10 <= 5:
-        pygame.draw.rect(win, (0, 191, 255), (50, 111 + 85*3-7, (bspeed - 20)/10 * 50, 57))
+    if (laserSpeed - 20)/10 <= 5:
+        pygame.draw.rect(win, (0, 191, 255), (50, 111 + 85*3-7, (laserSpeed - 20)/10 * 50, 57))
         upgradebspeed.draw(win)
     else:
         pygame.draw.rect(win, (0, 191, 255), (50, 111 + 85*3-7, 6 * 50, 57))
@@ -147,31 +147,77 @@ def handleUserDeath():
 
 def getAmmoBarColor():
 
-    if 1 - Game.USER.ammo/Game.USER.maxAmmo >= .75:
+    if Game.USER.ammo/Game.USER.maxAmmo >= .75:
         return (0, 255, 0)
-    elif 1 - Game.USER.ammo/Game.USER.maxAmmo >= .54:
+    elif Game.USER.ammo/Game.USER.maxAmmo >= .54:
         return (173, 255, 47)
-    elif 1 - Game.USER.ammo/Game.USER.maxAmmo >= .33:
+    elif Game.USER.ammo/Game.USER.maxAmmo >= .33:
         return (255, 215, 0)
     else:
         return (255, 0, 0)
 
-for i in range(200):
-    x = random.randint(0, 1000)
-    starx.append(x)
-    y = random.randint(0, 600)
-    stary.append(y)
+def generateStars():
+    for i in range(200):
+        x = random.randint(0, 1000)
+        starx.append(x)
+        y = random.randint(0, 600)
+        stary.append(y)
+
+
+def updateOnscreenUIElements():
+    updateOnscreenLasers()
+    updateOnscreenCoins()
+    updateOnscreenAsteroids()
+def updateOnscreenLasers():
+    for i in range(len(Game.ONSCREEN_LASERS)):
+        if i >= len(Game.ONSCREEN_LASERS):
+            continue
+        currentLaser = Game.ONSCREEN_LASERS[i]
+        if (currentLaser.y > 0):
+            currentLaser.y -= laserSpeed
+        else:
+            Game.ONSCREEN_LASERS.pop(i)
+def updateOnscreenCoins():
+    for i in range(len(Game.ONSCREEN_COINS)):
+        if i >= len(Game.ONSCREEN_COINS):
+            continue
+        currentCoin = Game.ONSCREEN_COINS[i]
+        if (currentCoin.y < globals.GAME_WINDOW_WIDTH):
+            currentCoin += currentCoin.vel
+        else:
+            Game.ONSCREEN_COINS.pop(i)
+def updateOnscreenAsteroids():
+    for i in range(len(Game.ONSCREEN_ASTEROIDS)):
+        if i >= len(Game.ONSCREEN_ASTEROIDS):
+            continue
+        currentAsteroid = Game.ONSCREEN_ASTEROIDS[i]
+        if (currentAsteroid.y < globals.GAME_WINDOW_WIDTH):
+            currentAsteroid.y += currentAsteroid.vel
+        else:
+            Game.ONSCREEN_ASTEROIDS.pop(i)
+
+def renderAmmoBar():
+    if Game.USER.ammo > 0:
+            pygame.draw.rect(win, (0, 0, 0), (10, 560, globals.AMMO_BAR_WIDTH, globals.AMMO_BAR_LENGTH))
+            pygame.draw.rect(win, getAmmoBarColor(), (10, 560, Game.USER.ammo/Game.USER.maxAmmo * globals.AMMO_BAR_WIDTH, globals.AMMO_BAR_LENGTH))
+    else:
+        #reload state
+        if time.time() - now1 > 5:
+            Game.USER.ammo = Game.USER.maxAmmo
+        else:
+            text3 = font.render('Reloading...', 1, (255, 255, 255))
+            win.blit(text3, (10, 560))
+    pygame.display.update()
+generateStars()
 #///////////////////////////////////////////////////////////////////main
 while Game.CURRENT_STATE != globals.GAME_QUIT:
     pygame.time.delay(25)
-    while Game.CURRENT_STATE == globals.HOME_STATE:
-        pygame.time.delay(25)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                Game.CURRENT_STATE = globals.GAME_QUIT
-                break
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            Game.CURRENT_STATE = globals.GAME_QUIT
+            break
+    if Game.CURRENT_STATE == globals.HOME_STATE:
         pos = pygame.mouse.get_pos()
-
         Screen1()
         buttonProp(Game.PLAY_BUTTON)
         buttonProp(Game.STORE_BUTTON)
@@ -181,7 +227,7 @@ while Game.CURRENT_STATE != globals.GAME_QUIT:
             if Game.STORE_BUTTON.isPressed(pos):
                 Game.CURRENT_STATE = globals.STORE_STATE
         pygame.display.update()
-    while Game.CURRENT_STATE == globals.STORE_STATE:
+    elif Game.CURRENT_STATE == globals.STORE_STATE:
         if speedbar < 5:
             upgradespeed = Button((124, 252, 0), 350, 111, 100, 142, "Cost: " + str(globals.ATTRIBUTE_UPGRADE_COSTS[speedbar]), 30)
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -210,78 +256,42 @@ while Game.CURRENT_STATE != globals.GAME_QUIT:
                         clicked = 0
                 if bupgrade == True:
                     if globals.CURRENT_COIN_COUNT >= globals.ATTRIBUTE_UPGRADE_COSTS[bspeedbar]:
-                        bspeed += 10
+                        laserSpeed += 10
                         globals.CURRENT_COIN_COUNT -= globals.ATTRIBUTE_UPGRADE_COSTS[bspeedbar]
                         bspeedbar += 1
                     bupgrade = False
         Store()
         pos = pygame.mouse.get_pos()
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                Game.CURRENT_STATE = globals.GAME_QUIT
-                break
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if Game.BACK_BUTTON.isPressed(pos):
                     Game.CURRENT_STATE = globals.HOME_STATE
-    while Game.CURRENT_STATE == globals.GAME_STATE:
-        pygame.time.delay(25)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                Game.CURRENT_STATE = globals.GAME_QUIT
-                break
+    elif Game.CURRENT_STATE == globals.GAME_STATE:
         
         #Handle user movement
         keys = pygame.key.get_pressed()
         if keys[pygame.K_RIGHT] and Game.USER.x + Game.USER.speed < 935:
             Game.USER.x += Game.USER.speed
-        if keys[pygame.K_LEFT] and Game.USER.x > 0:
+        elif keys[pygame.K_LEFT] and Game.USER.x > 0:
             Game.USER.x -= Game.USER.speed
         if keys[pygame.K_DOWN] and Game.USER.y + Game.USER.speed < 550:
             Game.USER.y += Game.USER.speed
-        if keys[pygame.K_UP] and Game.USER.y - Game.USER.speed > 0:
+        elif keys[pygame.K_UP] and Game.USER.y - Game.USER.speed > 0:
             Game.USER.y -= Game.USER.speed
+        #Handle user blasters
+        if keys[pygame.K_SPACE] and Game.USER.ammo > 0:
+            Game.ONSCREEN_LASERS.append(Laser(Game.USER.x + 18.5, Game.USER.y + 57))
+            Game.ONSCREEN_LASERS.append(Laser(Game.USER.x + 58.5, Game.USER.y + 57))
+            now1 = time.time()
+            Game.USER.ammo -= 2
 
-        buttonProp(Game.PLAY_BUTTON)
         win.blit(globals.BACKGROUND_IMAGE, (0, 0))
         drawGameWin()
-        if Game.USER.ammo < Game.USER.maxAmmo:
-            pygame.draw.rect(win, (0, 0, 0), (10, 560, 100, 20))
-            pygame.draw.rect(win, getAmmoBarColor(), (10, 560, (1 - Game.USER.ammo/Game.USER.maxAmmo) * 100, 20))
-            pygame.display.update()
-            if keys[pygame.K_SPACE]:
-                now2 = time.time()
-                Game.ONSCREEN_LASERS.append(Laser(Game.USER.x + 18.5, Game.USER.y + 57))
-                Game.ONSCREEN_LASERS.append(Laser(Game.USER.x + 58.5, Game.USER.y + 57))
-                now1 = time.time()
-                Game.USER.ammo += 2
-        else:
-            if time.time() - now1 > 5:
-                Game.USER.ammo = 0
-            else:
-                text3 = font.render('Reloading...', 1, (255, 255, 255))
-                win.blit(text3, (10, 560))
-                pygame.display.update()
-        for laser in Game.ONSCREEN_LASERS:
-            if laser.y > 0:
-                laser.y -= bspeed
-            else:
-                Game.ONSCREEN_LASERS.pop(Game.ONSCREEN_LASERS.index(laser))
 
-        if len(Game.ONSCREEN_COINS) < 2:
-            Game.ONSCREEN_COINS.append(Coin())
-        for money in Game.ONSCREEN_COINS:
-            if money.y < 600:
-                money.y += money.vel
-            else:
-                Game.ONSCREEN_COINS.pop(Game.ONSCREEN_COINS.index(money))
-
+        renderAmmoBar()
+        updateOnscreenUIElements()
         if len(Game.ONSCREEN_ASTEROIDS) < 9:
             Game.ONSCREEN_ASTEROIDS.append(Asteroid())
-        for asteroid in Game.ONSCREEN_ASTEROIDS:
-            if asteroid.y < 600:
-                asteroid.y += asteroid.vel
-            else:
-                Game.ONSCREEN_ASTEROIDS.pop(Game.ONSCREEN_ASTEROIDS.index(asteroid))
         counter = 0
         for money in Game.ONSCREEN_COINS:
             if Game.USER.x < money.x +7.5 < Game.USER.x +75 and Game.USER.y + 2.5 < money.y + 7.5 < Game.USER.y + 75:
