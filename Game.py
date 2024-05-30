@@ -3,6 +3,7 @@ import pygame
 import time
 
 from Button import Button
+from Player import Player
 
 def initializeGame():
     pygame.init()
@@ -23,6 +24,9 @@ def initializeGameObjects():
     ONSCREEN_ASTEROIDS = []
     ONSCREEN_COINS = []
     ONSCREEN_LASERS = []
+
+    global USER
+    USER = Player(400, 250, 6)
     return 
 
 def initializeGameVariables():

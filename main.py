@@ -13,7 +13,7 @@ from Player import Player
 aHit = {0: [67, 88, 13, 3], 1: [48, 62, 9, 2], 2: [81, 81, 9, 6], 3: [49, 49, 4, 6],
         4: [81, 105, 0, 0], 5: [40, 53, 0, 0], 6: [49, 40, 24, 9]}
 
-win = pygame.display.set_mode((1000, 600))
+win = pygame.display.set_mode((globals.GAME_WINDOW_LENGTH, globals.GAME_WINDOW_WIDTH))
 
 clock = pygame.time.Clock()
 font = pygame.font.SysFont('comicsans', 50, True)
@@ -23,9 +23,7 @@ rfont = pygame.font.SysFont('comicsans', 10)
 bfont = pygame.font.SysFont('comicsans', 50, True)
 bfont2 = pygame.font.SysFont('comicsans', 25, True)
 text2 = dfont.render('YOU DIED!', 1, (139, 0, 0))
-user = Player(400, 250, 24)
 now1 = time.time()
-user.ammo = 0
 clicked = 0
 speed = 8
 bspeed = 30
@@ -40,11 +38,11 @@ stary = []
 #//////////////////////////////////////////////////////////////////////////functions
 def drawGameWin():
     win.blit(globals.BACKGROUND_IMAGE, (0, 0))
-    user.draw(win)
+    Game.USER.draw(win)
     for asteroid in Game.ONSCREEN_ASTEROIDS:
         asteroid.draw(win)
-    for money in Game.ONSCREEN_COINS:
-        money.draw(win)
+    for coin in Game.ONSCREEN_COINS:
+        coin.draw(win)
     for laser in Game.ONSCREEN_LASERS:
         laser.draw(win)
     text = font.render('Coins: ' + str(globals.CURRENT_COIN_COUNT), 1, (255, 255, 255))
@@ -55,8 +53,6 @@ def drawGameWin():
     win.blit(btext, (700, 130))
 
     pygame.display.update()
-
-
 def Screen1():
     win.fill((0, 0, 0))
     for i in range(200):
@@ -70,7 +66,7 @@ def Screen1():
     win.blit(displaycoins, (700, 40))
 
 def Store():
-    user.speed = 8
+    Game.USER.speed = 8
     bigfont = pygame.font.SysFont('comicsans', 50, True)
     win.fill((139, 134, 130))
     Game.BACK_BUTTON.draw(win)
@@ -131,14 +127,34 @@ def buttonProp(button):
         else:
             button.color = (0, 191, 255)
 
-def clearGame():
+def resetGameState():
     globals.CURRENT_SCORE = 0
     Game.ONSCREEN_ASTEROIDS = []
     Game.ONSCREEN_COINS = []
-    screenlaser = []
-    user.x = 400
-    user.y = 250
-    magcounter = 0
+    Game.ONSCREEN_LASERS = []
+    Game.USER.x = 400
+    Game.USER.y = 250
+    Game.USER.ammo = 0
+
+def handleUserDeath():
+    if globals.CURRENT_SCORE > globals.CURRENT_BEST_SCORE:
+        globals.CURRENT_BEST_SCORE = globals.CURRENT_SCORE
+    resetGameState()
+
+    win.blit(text2, (300, 300))
+    pygame.display.update()
+    Game.pauseScreen()
+
+def getAmmoBarColor():
+
+    if 1 - Game.USER.ammo/Game.USER.maxAmmo >= .75:
+        return (0, 255, 0)
+    elif 1 - Game.USER.ammo/Game.USER.maxAmmo >= .54:
+        return (173, 255, 47)
+    elif 1 - Game.USER.ammo/Game.USER.maxAmmo >= .33:
+        return (255, 215, 0)
+    else:
+        return (255, 0, 0)
 
 for i in range(200):
     x = random.randint(0, 1000)
@@ -213,46 +229,38 @@ while Game.CURRENT_STATE != globals.GAME_QUIT:
             if event.type == pygame.QUIT:
                 Game.CURRENT_STATE = globals.GAME_QUIT
                 break
-        user.speed = speed
+        
+        #Handle user movement
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_RIGHT] and user.x + user.speed < 935:
-            user.x += user.speed
-        if keys[pygame.K_LEFT] and user.x > 0:
-            user.x -= user.speed
-        if keys[pygame.K_DOWN] and user.y + user.speed < 550:
-            user.y += user.speed
-        if keys[pygame.K_UP] and user.y - user.speed > 0:
-            user.y -= user.speed
+        if keys[pygame.K_RIGHT] and Game.USER.x + Game.USER.speed < 935:
+            Game.USER.x += Game.USER.speed
+        if keys[pygame.K_LEFT] and Game.USER.x > 0:
+            Game.USER.x -= Game.USER.speed
+        if keys[pygame.K_DOWN] and Game.USER.y + Game.USER.speed < 550:
+            Game.USER.y += Game.USER.speed
+        if keys[pygame.K_UP] and Game.USER.y - Game.USER.speed > 0:
+            Game.USER.y -= Game.USER.speed
 
         buttonProp(Game.PLAY_BUTTON)
         win.blit(globals.BACKGROUND_IMAGE, (0, 0))
         drawGameWin()
-        if user.ammo < user.maxAmmo:
+        if Game.USER.ammo < Game.USER.maxAmmo:
             pygame.draw.rect(win, (0, 0, 0), (10, 560, 100, 20))
-            if 1 - user.ammo/user.maxAmmo >= 0:
-                color = (255, 0, 0)
-                if 1 - user.ammo/user.maxAmmo >= .33:
-                    color = (255, 215, 0)
-                    if 1 - user.ammo/user.maxAmmo >= .54:
-                        color = (173, 255, 47)
-                        if 1 - user.ammo/user.maxAmmo >= .75:
-                            color = (0, 255, 0)
-            pygame.draw.rect(win, color, (10, 560, (1 - user.ammo/user.maxAmmo) * 100, 20))
+            pygame.draw.rect(win, getAmmoBarColor(), (10, 560, (1 - Game.USER.ammo/Game.USER.maxAmmo) * 100, 20))
             pygame.display.update()
             if keys[pygame.K_SPACE]:
                 now2 = time.time()
-                Game.ONSCREEN_LASERS.append(Laser(user.x + 18.5, user.y + 57))
-                Game.ONSCREEN_LASERS.append(Laser(user.x + 58.5, user.y + 57))
+                Game.ONSCREEN_LASERS.append(Laser(Game.USER.x + 18.5, Game.USER.y + 57))
+                Game.ONSCREEN_LASERS.append(Laser(Game.USER.x + 58.5, Game.USER.y + 57))
                 now1 = time.time()
-                user.ammo += 2
+                Game.USER.ammo += 2
         else:
             if time.time() - now1 > 5:
-                user.ammo = 0
+                Game.USER.ammo = 0
             else:
                 text3 = font.render('Reloading...', 1, (255, 255, 255))
                 win.blit(text3, (10, 560))
                 pygame.display.update()
-            spawnLoop2 = 0
         for laser in Game.ONSCREEN_LASERS:
             if laser.y > 0:
                 laser.y -= bspeed
@@ -261,7 +269,6 @@ while Game.CURRENT_STATE != globals.GAME_QUIT:
 
         if len(Game.ONSCREEN_COINS) < 2:
             Game.ONSCREEN_COINS.append(Coin())
-            spawnLoop1 = 0
         for money in Game.ONSCREEN_COINS:
             if money.y < 600:
                 money.y += money.vel
@@ -277,7 +284,7 @@ while Game.CURRENT_STATE != globals.GAME_QUIT:
                 Game.ONSCREEN_ASTEROIDS.pop(Game.ONSCREEN_ASTEROIDS.index(asteroid))
         counter = 0
         for money in Game.ONSCREEN_COINS:
-            if user.x < money.x +7.5 < user.x +75 and user.y + 2.5 < money.y + 7.5 < user.y + 75:
+            if Game.USER.x < money.x +7.5 < Game.USER.x +75 and Game.USER.y + 2.5 < money.y + 7.5 < Game.USER.y + 75:
                 globals.CURRENT_COIN_COUNT += 1
                 globals.CURRENT_SCORE += 1
                 Game.ONSCREEN_COINS.pop(Game.ONSCREEN_COINS.index(money))
@@ -292,37 +299,13 @@ while Game.CURRENT_STATE != globals.GAME_QUIT:
                         except ValueError:
                           pass
         for asteroid in Game.ONSCREEN_ASTEROIDS:
-            if asteroid.x + aHit[asteroid.chose][2] < user.x < asteroid.x + aHit[asteroid.chose][2] + aHit[asteroid.chose][0] or asteroid.x + aHit[asteroid.chose][2] < user.x + 75< asteroid.x + aHit[asteroid.chose][2] + aHit[asteroid.chose][0]:
-                if asteroid.y + aHit[asteroid.chose][3] < user.y + 59.5< asteroid.y + aHit[asteroid.chose][3] + aHit[asteroid.chose][1] or asteroid.y + aHit[asteroid.chose][3] < user.y + 75 < asteroid.y + aHit[asteroid.chose][3] + aHit[asteroid.chose][1]:
-                    if globals.CURRENT_SCORE > globals.CURRENT_BEST_SCORE:
-                        globals.CURRENT_BEST_SCORE = globals.CURRENT_SCORE
-                    globals.CURRENT_SCORE = 0
-                    Game.ONSCREEN_ASTEROIDS = []
-                    Game.ONSCREEN_COINS = []
-                    Game.ONSCREEN_LASERS = []
-                    user.x = 400
-                    user.y = 250
-                    user.ammo = 0
-
-                    win.blit(text2, (300, 300))
-                    pygame.display.update()
-                    Game.pauseScreen()
+            if asteroid.x + aHit[asteroid.chose][2] < Game.USER.x < asteroid.x + aHit[asteroid.chose][2] + aHit[asteroid.chose][0] or asteroid.x + aHit[asteroid.chose][2] < Game.USER.x + 75< asteroid.x + aHit[asteroid.chose][2] + aHit[asteroid.chose][0]:
+                if asteroid.y + aHit[asteroid.chose][3] < Game.USER.y + 59.5< asteroid.y + aHit[asteroid.chose][3] + aHit[asteroid.chose][1] or asteroid.y + aHit[asteroid.chose][3] < Game.USER.y + 75 < asteroid.y + aHit[asteroid.chose][3] + aHit[asteroid.chose][1]:
+                    handleUserDeath()
                     Game.CURRENT_STATE = globals.HOME_STATE
-            elif asteroid.x + aHit[asteroid.chose][2] < user.x + 27.5 < asteroid.x + aHit[asteroid.chose][2] + aHit[asteroid.chose][0] or asteroid.x + aHit[asteroid.chose][2] < user.x + 47.5 < asteroid.x + aHit[asteroid.chose][2] + aHit[asteroid.chose][0]:
-                if asteroid.y + aHit[asteroid.chose][3] < user.y + 2.5 < asteroid.y + aHit[asteroid.chose][3] + aHit[asteroid.chose][1] or asteroid.y + aHit[asteroid.chose][3] < user.y + 75 < asteroid.y + aHit[asteroid.chose][3] + aHit[asteroid.chose][1]:
-                    if globals.CURRENT_SCORE > globals.CURRENT_BEST_SCORE:
-                        globals.CURRENT_BEST_SCORE = globals.CURRENT_SCORE
-                    globals.CURRENT_SCORE = 0
-                    Game.ONSCREEN_ASTEROIDS = []
-                    Game.ONSCREEN_COINS = []
-                    Game.ONSCREEN_LASERS = []
-                    user.x = 400
-                    user.y = 250
-                    user.ammo = 0
-
-                    win.blit(text2, (300, 300))
-                    pygame.display.update()
-                    Game.pauseScreen()
+            elif asteroid.x + aHit[asteroid.chose][2] < Game.USER.x + 27.5 < asteroid.x + aHit[asteroid.chose][2] + aHit[asteroid.chose][0] or asteroid.x + aHit[asteroid.chose][2] < Game.USER.x + 47.5 < asteroid.x + aHit[asteroid.chose][2] + aHit[asteroid.chose][0]:
+                if asteroid.y + aHit[asteroid.chose][3] < Game.USER.y + 2.5 < asteroid.y + aHit[asteroid.chose][3] + aHit[asteroid.chose][1] or asteroid.y + aHit[asteroid.chose][3] < Game.USER.y + 75 < asteroid.y + aHit[asteroid.chose][3] + aHit[asteroid.chose][1]:
+                    handleUserDeath()
                     Game.CURRENT_STATE = globals.HOME_STATE
         clock.tick(100)
 

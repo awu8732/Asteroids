@@ -1,6 +1,9 @@
 import pygame
 
 #===================== GAME VARIABLES =====================
+GAME_WINDOW_LENGTH = 1000
+GAME_WINDOW_WIDTH = 600
+
 GAME_QUIT = -1
 GAME_STATE = 0
 HOME_STATE = 1
