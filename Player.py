@@ -9,6 +9,7 @@ class Player:
         self.hitbox = ((20, 72.5), (75, 18))
         self.maxAmmo = 20
         self.ammo = self.maxAmmo
+        self.bulletSpeed = 36
     def draw(self, win):
         win.blit(globals.FIGHTER_IMAGE, (self.x, self.y))
         #pygame.draw.rect(win, (0, 255, 0), (self.x, self.y + 59.5, 75, 15.5), 1)
