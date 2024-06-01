@@ -38,7 +38,7 @@ def initializeGameVariables():
     CURRENT_STATE = globals.HOME_STATE
 
     global WIN
-    WIN = pygame.display.set_mode((globals.GAME_WINDOW_LENGTH, globals.GAME_WINDOW_WIDTH))
+    WIN = pygame.display.set_mode((globals.GAME_WINDOW_WIDTH, globals.GAME_WINDOW_LENGTH), pygame.RESIZABLE)
 
 #=============================================================================================
 #======================================= GAME FUNCTIONS ======================================
@@ -49,10 +49,10 @@ def handleUserDeath():
         globals.CURRENT_BEST_SCORE = globals.CURRENT_SCORE
     resetGameState()
 
-    #delete later
+    #render death text
     DEATH_TEXT = globals.LARGE_FONT.render('YOU DIED!', 1, (200, 0, 0))
-
-    WIN.blit(DEATH_TEXT, (300, 300))
+    centered_rectangle = DEATH_TEXT.get_rect(center=(globals.GAME_WINDOW_WIDTH/2, globals.GAME_WINDOW_LENGTH/2))
+    WIN.blit(DEATH_TEXT, centered_rectangle)
     pygame.display.update()
     pauseScreen()
 

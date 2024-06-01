@@ -13,13 +13,6 @@ aHit = {0: [67, 88, 13, 3], 1: [48, 62, 9, 2], 2: [81, 81, 9, 6], 3: [49, 49, 4,
         4: [81, 105, 0, 0], 5: [40, 53, 0, 0], 6: [49, 40, 24, 9]}
 
 clock = pygame.time.Clock()
-font = pygame.font.SysFont('comicsans', 50, True)
-sfont = pygame.font.SysFont('comicsans', 50, True)
-dfont = pygame.font.SysFont('comicsans', 100, True)
-rfont = pygame.font.SysFont('comicsans', 10)
-bfont = pygame.font.SysFont('comicsans', 50, True)
-bfont2 = pygame.font.SysFont('comicsans', 25, True)
-text2 = dfont.render('YOU DIED!', 1, (139, 0, 0))
 now1 = time.time()
 clicked = 0
 speed = 8
@@ -42,11 +35,11 @@ def drawGameWin():
         coin.draw(Game.WIN)
     for laser in Game.ONSCREEN_LASERS:
         laser.draw(Game.WIN)
-    text = font.render('Coins: ' + str(globals.CURRENT_COIN_COUNT), 1, (255, 255, 255))
+    text = globals.STAT_FONT.render('Coins: ' + str(globals.CURRENT_COIN_COUNT), 1, (255, 255, 255))
     Game.WIN.blit(text, (795, 70))
-    text1 = sfont.render('Score: ' + str(globals.CURRENT_SCORE), 1, (255, 255, 255))
+    text1 = globals.STAT_FONT.render('Score: ' + str(globals.CURRENT_SCORE), 1, (255, 255, 255))
     Game.WIN.blit(text1, (795, 10))
-    btext = bfont.render('Best Score: ' + str(globals.CURRENT_BEST_SCORE), 1, (255, 255, 255))
+    btext = globals.STAT_FONT.render('Best Score: ' + str(globals.CURRENT_BEST_SCORE), 1, (255, 255, 255))
     Game.WIN.blit(btext, (700, 130))
 
     pygame.display.update()
@@ -56,10 +49,10 @@ def Screen1():
         pygame.draw.circle(Game.WIN, (255, 255, 255), (starx[i], stary[i]), 1)
     Game.PLAY_BUTTON.draw(Game.WIN)
     Game.STORE_BUTTON.draw(Game.WIN)
-    btext2 = bfont2.render('Best Score: ' + str(globals.CURRENT_BEST_SCORE), 1, (255, 255, 255))
+    btext2 = globals.STAT_FONT.render('Best Score: ' + str(globals.CURRENT_BEST_SCORE), 1, (255, 255, 255))
     Game.WIN.blit(btext2, (700, 10))
     Game.WIN.blit(globals.LOGO_IMAGE, (136, 180))
-    displaycoins = bfont2.render('Coins: ' + str(globals.CURRENT_COIN_COUNT), 1, (255, 255, 255))
+    displaycoins = globals.STAT_FONT.render('Coins: ' + str(globals.CURRENT_COIN_COUNT), 1, (255, 255, 255))
     Game.WIN.blit(displaycoins, (700, 40))
 
 def Store():
@@ -140,7 +133,7 @@ def renderAmmoBar():
         if time.time() - now1 > 5:
             Game.USER.ammo = Game.USER.maxAmmo
         else:
-            text3 = font.render('Reloading...', 1, (255, 255, 255))
+            text3 = globals.STAT_FONT.render('Reloading...', 1, (255, 255, 255))
             Game.WIN.blit(text3, (10, 560))
     pygame.display.update()
 
@@ -152,6 +145,12 @@ while Game.CURRENT_STATE != globals.GAME_QUIT:
         if event.type == pygame.QUIT:
             Game.CURRENT_STATE = globals.GAME_QUIT
             break
+        elif event.type == pygame.VIDEORESIZE:
+            globals.GAME_WINDOW_WIDTH = event.w
+            globals.GAME_WINDOW_LENGTH = event.h
+            Game.WIN = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+            pygame.display.flip()
+
     if Game.CURRENT_STATE == globals.HOME_STATE:
         pos = pygame.mouse.get_pos()
         Screen1()

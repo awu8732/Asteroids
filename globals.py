@@ -1,8 +1,8 @@
 import pygame
 
 #===================== GAME VARIABLES =====================
-GAME_WINDOW_LENGTH = 1000
-GAME_WINDOW_WIDTH = 600
+GAME_WINDOW_LENGTH = 600
+GAME_WINDOW_WIDTH = 1000
 
 GAME_QUIT = -1
 GAME_STATE = 0
@@ -10,7 +10,11 @@ HOME_STATE = 1
 STORE_STATE = 2
 
 pygame.font.init()
-LARGE_FONT = pygame.font.SysFont('forte', 100)
+LARGE_FONT_SIZE = 80
+STAT_FONT_SIZE = 30
+
+LARGE_FONT = pygame.font.SysFont('impact', LARGE_FONT_SIZE)
+STAT_FONT = pygame.font.SysFont(None, STAT_FONT_SIZE)
 
 CURRENT_BEST_SCORE = 0
 CURRENT_SCORE = 0
@@ -22,14 +26,14 @@ AMMO_BAR_WIDTH = 100
 ATTRIBUTE_UPGRADE_COSTS = [5, 10, 15, 20, 25]
 
 #===================== IMAGE PATHS =====================
-ASTEROID_IMAGE_PATHS = ['Pictures/Asteroid11.png', 'Pictures/Asteroid12.png',
-                        'Pictures/Asteroid21.png', 'Pictures/Asteroid12.png', 
-                        'Pictures/Asteroid31.png', 'Pictures/Asteroid12.png', 
-                        'Pictures/Asteroid42.png']
-FIGHTER_IMAGE_PATH = 'Pictures/fighter.png'
-LOGO_IMAGE_PATH = 'Pictures/Logo.png'
-COIN_IMAGE_PATH = 'Pictures/coin.png'
-BACKGROUND_IMAGE_PATH = 'Pictures/space.png'
+ASTEROID_IMAGE_PATHS = ['assets/Asteroid11.png', 'assets/Asteroid12.png',
+                        'assets/Asteroid21.png', 'assets/Asteroid12.png', 
+                        'assets/Asteroid31.png', 'assets/Asteroid12.png', 
+                        'assets/Asteroid42.png']
+FIGHTER_IMAGE_PATH = 'assets/fighter.png'
+LOGO_IMAGE_PATH = 'assets/Logo.png'
+COIN_IMAGE_PATH = 'assets/coin.png'
+BACKGROUND_IMAGE_PATH = 'assets/space.png'
 
 #===================== INITIALIZE IMAGES =====================
 ASTEROID_IMAGES = []
@@ -39,4 +43,22 @@ FIGHTER_IMAGE = pygame.image.load(FIGHTER_IMAGE_PATH)
 LOGO_IMAGE = pygame.image.load(LOGO_IMAGE_PATH)
 COIN_IMAGE = pygame.image.load(COIN_IMAGE_PATH)
 BACKGROUND_IMAGE = pygame.image.load(BACKGROUND_IMAGE_PATH)
+
+
+#get fonts
+def check_fonts():
+    win = pygame.display.set_mode((GAME_WINDOW_LENGTH, GAME_WINDOW_WIDTH))
+    pygame_fonts = pygame.font.get_fonts()
+
+    for i, font in enumerate(pygame_fonts):
+        current_font = pygame.font.SysFont(font, 15)
+        temp_text = current_font.render(font, 1, (255,0,0))
+        win.blit(temp_text, (120 * int(i/30) + 5,20 * (i%30) + 5))
+
+    pygame.display.update()
+    
+    while 1:
+        continue
+
+
 
