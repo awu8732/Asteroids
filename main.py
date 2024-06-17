@@ -26,24 +26,8 @@ starx = []
 stary = []
 
 #//////////////////////////////////////////////////////////////////////////functions
-def drawGameWin():
-    Game.WIN.blit(globals.BACKGROUND_IMAGE, (0, 0))
-    Game.USER.draw(Game.WIN)
-    for asteroid in Game.ONSCREEN_ASTEROIDS:
-        asteroid.draw(Game.WIN)
-    for coin in Game.ONSCREEN_COINS:
-        coin.draw(Game.WIN)
-    for laser in Game.ONSCREEN_LASERS:
-        laser.draw(Game.WIN)
-    text = globals.STAT_FONT.render('Coins: ' + str(globals.CURRENT_COIN_COUNT), 1, (255, 255, 255))
-    Game.WIN.blit(text, (795, 70))
-    text1 = globals.STAT_FONT.render('Score: ' + str(globals.CURRENT_SCORE), 1, (255, 255, 255))
-    Game.WIN.blit(text1, (795, 10))
-    btext = globals.STAT_FONT.render('Best Score: ' + str(globals.CURRENT_BEST_SCORE), 1, (255, 255, 255))
-    Game.WIN.blit(btext, (700, 130))
 
-    pygame.display.update()
-def Screen1():
+def HomeScreen():
     Game.WIN.fill((0, 0, 0))
     for i in range(200):
         pygame.draw.circle(Game.WIN, (255, 255, 255), (starx[i], stary[i]), 1)
@@ -133,8 +117,8 @@ def renderAmmoBar():
         if time.time() - now1 > 5:
             Game.USER.ammo = Game.USER.maxAmmo
         else:
-            text3 = globals.STAT_FONT.render('Reloading...', 1, (255, 255, 255))
-            Game.WIN.blit(text3, (10, 560))
+            isReloadingText = globals.STAT_FONT.render('Reloading...', 1, (255, 255, 255))
+            Game.WIN.blit(isReloadingText, (10, globals.GAME_WINDOW_LENGTH - 40))
     pygame.display.update()
 
 generateStars()
@@ -153,7 +137,7 @@ while Game.CURRENT_STATE != globals.GAME_QUIT:
 
     if Game.CURRENT_STATE == globals.HOME_STATE:
         pos = pygame.mouse.get_pos()
-        Screen1()
+        HomeScreen()
         buttonProp(Game.PLAY_BUTTON)
         buttonProp(Game.STORE_BUTTON)
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -214,14 +198,14 @@ while Game.CURRENT_STATE != globals.GAME_QUIT:
         elif keys[pygame.K_UP] and Game.USER.y - Game.USER.speed > 0:
             Game.USER.y -= Game.USER.speed
         #Handle user blasters
-        if keys[pygame.K_SPACE] and Game.USER.ammo > 0:
+        if keys[pygame.K_SPACE]:
             Game.ONSCREEN_LASERS.append(Laser(Game.USER.x + 18.5, Game.USER.y + 57))
             Game.ONSCREEN_LASERS.append(Laser(Game.USER.x + 58.5, Game.USER.y + 57))
-            now1 = time.time()
+            now1 = time.time() #############
             Game.USER.ammo -= 2
 
         Game.WIN.blit(globals.BACKGROUND_IMAGE, (0, 0))
-        drawGameWin()
+        Game.renderInGameElements()
 
         renderAmmoBar()
         Game.updateOnscreenUIElements()
@@ -238,8 +222,8 @@ while Game.CURRENT_STATE != globals.GAME_QUIT:
                 Game.ONSCREEN_COINS.pop(Game.ONSCREEN_COINS.index(money))
         for asteroid in Game.ONSCREEN_ASTEROIDS:
             for laser in Game.ONSCREEN_LASERS:
-                if asteroid.x + aHit[asteroid.chose][2] < laser.x < asteroid.x + aHit[asteroid.chose][2] + aHit[asteroid.chose][0]:
-                    if asteroid.y + aHit[asteroid.chose][3] < laser.y < asteroid.y + aHit[asteroid.chose][3] +  aHit[asteroid.chose][1]:
+                if asteroid.x + aHit[asteroid.type][2] < laser.x < asteroid.x + aHit[asteroid.type][2] + aHit[asteroid.type][0]:
+                    if asteroid.y + aHit[asteroid.type][3] < laser.y < asteroid.y + aHit[asteroid.type][3] +  aHit[asteroid.type][1]:
                         Game.ONSCREEN_LASERS.pop(Game.ONSCREEN_LASERS.index(laser))
                         globals.CURRENT_SCORE += 5
                         try:
@@ -247,12 +231,12 @@ while Game.CURRENT_STATE != globals.GAME_QUIT:
                         except ValueError:
                           pass
         for asteroid in Game.ONSCREEN_ASTEROIDS:
-            if asteroid.x + aHit[asteroid.chose][2] < Game.USER.x < asteroid.x + aHit[asteroid.chose][2] + aHit[asteroid.chose][0] or asteroid.x + aHit[asteroid.chose][2] < Game.USER.x + 75< asteroid.x + aHit[asteroid.chose][2] + aHit[asteroid.chose][0]:
-                if asteroid.y + aHit[asteroid.chose][3] < Game.USER.y + 59.5< asteroid.y + aHit[asteroid.chose][3] + aHit[asteroid.chose][1] or asteroid.y + aHit[asteroid.chose][3] < Game.USER.y + 75 < asteroid.y + aHit[asteroid.chose][3] + aHit[asteroid.chose][1]:
+            if asteroid.x + aHit[asteroid.type][2] < Game.USER.x < asteroid.x + aHit[asteroid.type][2] + aHit[asteroid.type][0] or asteroid.x + aHit[asteroid.type][2] < Game.USER.x + 75< asteroid.x + aHit[asteroid.type][2] + aHit[asteroid.type][0]:
+                if asteroid.y + aHit[asteroid.type][3] < Game.USER.y + 59.5< asteroid.y + aHit[asteroid.type][3] + aHit[asteroid.type][1] or asteroid.y + aHit[asteroid.type][3] < Game.USER.y + 75 < asteroid.y + aHit[asteroid.type][3] + aHit[asteroid.type][1]:
                     Game.handleUserDeath()
                     Game.CURRENT_STATE = globals.HOME_STATE
-            elif asteroid.x + aHit[asteroid.chose][2] < Game.USER.x + 27.5 < asteroid.x + aHit[asteroid.chose][2] + aHit[asteroid.chose][0] or asteroid.x + aHit[asteroid.chose][2] < Game.USER.x + 47.5 < asteroid.x + aHit[asteroid.chose][2] + aHit[asteroid.chose][0]:
-                if asteroid.y + aHit[asteroid.chose][3] < Game.USER.y + 2.5 < asteroid.y + aHit[asteroid.chose][3] + aHit[asteroid.chose][1] or asteroid.y + aHit[asteroid.chose][3] < Game.USER.y + 75 < asteroid.y + aHit[asteroid.chose][3] + aHit[asteroid.chose][1]:
+            elif asteroid.x + aHit[asteroid.type][2] < Game.USER.x + 27.5 < asteroid.x + aHit[asteroid.type][2] + aHit[asteroid.type][0] or asteroid.x + aHit[asteroid.type][2] < Game.USER.x + 47.5 < asteroid.x + aHit[asteroid.type][2] + aHit[asteroid.type][0]:
+                if asteroid.y + aHit[asteroid.type][3] < Game.USER.y + 2.5 < asteroid.y + aHit[asteroid.type][3] + aHit[asteroid.type][1] or asteroid.y + aHit[asteroid.type][3] < Game.USER.y + 75 < asteroid.y + aHit[asteroid.type][3] + aHit[asteroid.type][1]:
                     Game.handleUserDeath()
                     Game.CURRENT_STATE = globals.HOME_STATE
         clock.tick(100)

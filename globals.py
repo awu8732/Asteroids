@@ -25,6 +25,9 @@ AMMO_BAR_WIDTH = 100
 
 ATTRIBUTE_UPGRADE_COSTS = [5, 10, 15, 20, 25]
 
+WHITE = (255, 255, 255)
+BLACK = (0 ,0 ,0)
+
 #===================== IMAGE PATHS =====================
 ASTEROID_IMAGE_PATHS = ['assets/Asteroid11.png', 'assets/Asteroid12.png',
                         'assets/Asteroid21.png', 'assets/Asteroid12.png', 

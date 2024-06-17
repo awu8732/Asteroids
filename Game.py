@@ -9,6 +9,7 @@ from Player import Player
 #==================================== GAME INITIALIZATION ====================================
 #=============================================================================================
 
+
 def initializeGame():
     pygame.init()
     pygame.display.set_caption("Asteroids")
@@ -34,11 +35,11 @@ def initializeGameElements():
     return 
 
 def initializeGameVariables():
-    global CURRENT_STATE
+    global WIN, CURRENT_STATE
+    WIN = pygame.display.set_mode((globals.GAME_WINDOW_WIDTH, globals.GAME_WINDOW_LENGTH), pygame.RESIZABLE)
     CURRENT_STATE = globals.HOME_STATE
 
-    global WIN
-    WIN = pygame.display.set_mode((globals.GAME_WINDOW_WIDTH, globals.GAME_WINDOW_LENGTH), pygame.RESIZABLE)
+initializeGame()
 
 #=============================================================================================
 #======================================= GAME FUNCTIONS ======================================
@@ -56,6 +57,27 @@ def handleUserDeath():
     pygame.display.update()
     pauseScreen()
 
+def renderInGameElements():
+    #render background
+    WIN.blit(globals.BACKGROUND_IMAGE, (0, 0))
+
+    #render game elements
+    USER.draw(WIN)
+    for asteroid in ONSCREEN_ASTEROIDS:
+        asteroid.draw(WIN)
+    for coin in ONSCREEN_COINS:
+        coin.draw(WIN)
+    for laser in ONSCREEN_LASERS:
+        laser.draw(WIN)
+    
+    #render game stats
+    scoreText = globals.STAT_FONT.render('Score: ' + str(globals.CURRENT_SCORE), 1, globals.WHITE)
+    bestScoreText = globals.STAT_FONT.render('Best Score: ' + str(globals.CURRENT_BEST_SCORE), 1, globals.WHITE)
+    coinText = globals.STAT_FONT.render('Coins: ' + str(globals.CURRENT_COIN_COUNT), 1, globals.WHITE)
+    WIN.blit(scoreText, (globals.GAME_WINDOW_WIDTH - 200, 10))
+    WIN.blit(bestScoreText, (globals.GAME_WINDOW_WIDTH - 200, 40))
+    WIN.blit(coinText, (globals.GAME_WINDOW_WIDTH - 200, 70))
+    pygame.display.update()
 
 def resetGameState():
     globals.CURRENT_SCORE = 0
@@ -118,5 +140,5 @@ def pauseScreen(interval = 2):
     while (time.time() < goal):
         pass
 
-initializeGame()
+
 
