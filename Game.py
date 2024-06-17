@@ -31,7 +31,10 @@ def initializeGameElements():
     ONSCREEN_LASERS = []
 
     global USER
-    USER = Player(400, 250, 6)
+    USER = Player(400, 250, globals.UPGRADE_ATTRIBUTES["SPEED"][0])
+
+    for i, key in enumerate(globals.UPGRADE_ATTRIBUTES.keys()):
+        globals.UPGRADE_ATTRIBUTES[key].append(Button((0,255,0), 23/30 * globals.GAME_WINDOW_WIDTH + 5, 100 + 80*i, 60, 50, '+'))
     return 
 
 def initializeGameVariables():
@@ -93,6 +96,24 @@ def renderGameScreen():
     WIN.blit(scoreText, (globals.GAME_WINDOW_WIDTH - 200, 10))
     WIN.blit(bestScoreText, (globals.GAME_WINDOW_WIDTH - 200, 40))
     WIN.blit(coinText, (globals.GAME_WINDOW_WIDTH - 200, 70))
+    pygame.display.update()
+
+def renderStoreScreen():
+    WIN.fill((127, 137, 143))
+    BACK_BUTTON.draw(WIN)
+
+    leftMargin = globals.GAME_WINDOW_WIDTH/10
+    padding = 5
+    attrSize = 60
+    for i, attribute in enumerate(globals.UPGRADE_ATTRIBUTES):
+        attributeText = globals.NORMAL_FONT.render(attribute , 1, globals.WHITE)
+        WIN.blit(attributeText, (leftMargin, 75 + 80 * i))
+        pygame.draw.rect(WIN, globals.WHITE, (leftMargin, 100 + 80 * i, globals.GAME_WINDOW_WIDTH*2/3, 50))
+        globals.UPGRADE_ATTRIBUTES[attribute][3].draw(WIN)
+
+        currentLevel = globals.UPGRADE_ATTRIBUTES[attribute][1]
+        for j in range(currentLevel + 1):
+            pygame.draw.rect(WIN, (63, 159, 217), (leftMargin + padding + (attrSize + padding) * j, 100 + 80 * i + padding, attrSize, 50 - 2 * padding))
     pygame.display.update()
 
 def resetGameState():

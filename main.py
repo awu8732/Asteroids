@@ -27,53 +27,21 @@ stary = []
 
 #//////////////////////////////////////////////////////////////////////////functions
 def Store():
-    Game.WIN.fill((139, 134, 130))
+    Game.WIN.fill((127, 137, 143))
     Game.BACK_BUTTON.draw(Game.WIN)
-    for p in range(3):
-        pygame.draw.rect(Game.WIN, (91, 91, 91), (550, 111 + 163 * p, 400, 142))
-        pygame.draw.rect(Game.WIN, (0, 0, 0), (550, 111 + 85 + 163 * p, 300, 57), 3)
-        pygame.draw.rect(Game.WIN, (124, 252, 0), (850, 111 + 163 * p, 100, 142), 3)
-        pygame.draw.rect(Game.WIN, (91, 91, 91), (50, 111 + 163 * p, 400, 142))
-        pygame.draw.rect(Game.WIN, (0, 0, 0), (50, 111 + 85 + 163 * p, 300, 57), 3)
-        pygame.draw.rect(Game.WIN, (124, 252, 0), (350, 111 + 163 * p, 100, 142), 3)
-    #speed bar
 
-    if (speed - 5)/3 <= 5:
-        pygame.draw.rect(Game.WIN, (0, 191, 255), (50, 111 + 85, (speed - 5)/3 * 50, 57))
-        upgradespeed.draw(Game.WIN)
-    else:
-        pygame.draw.rect(Game.WIN, (0, 191, 255), (50, 111 + 85, 6 * 50, 57))
-        upgradespeed.text = "MAX"
-        upgradespeed.draw(Game.WIN)
-    #bspeed bar
-    if (laserSpeed - 20)/10 <= 5:
-        pygame.draw.rect(Game.WIN, (0, 191, 255), (50, 111 + 85*3-7, (laserSpeed - 20)/10 * 50, 57))
-        upgradebspeed.draw(Game.WIN)
-    else:
-        pygame.draw.rect(Game.WIN, (0, 191, 255), (50, 111 + 85*3-7, 6 * 50, 57))
-        upgradebspeed.text = "MAX"
-        upgradebspeed.draw(Game.WIN)
+    leftMargin = globals.GAME_WINDOW_WIDTH/10
+    padding = 5
+    attrSize = 60
+    for i, attribute in enumerate(globals.UPGRADE_ATTRIBUTES):
+        attributeText = globals.NORMAL_FONT.render(attribute , 1, globals.WHITE)
+        Game.WIN.blit(attributeText, (leftMargin, 75 + 80 * i))
+        pygame.draw.rect(Game.WIN, globals.WHITE, (leftMargin, 100 + 80 * i, globals.GAME_WINDOW_WIDTH*2/3, 50))
+        globals.UPGRADE_ATTRIBUTES[attribute][3].draw(Game.WIN)
 
-
-    for x in range(3):
-        for i in range(5):
-            pygame.draw.line(Game.WIN, (0, 0, 0), (600 + 50 * i, 111 + 142 + 163 * x), (600 + 50 * i, 111 + 85 + 163 * x), 3)
-            pygame.draw.line(Game.WIN, (0, 0, 0), (100 + 50*i, 111 + 142 + 163*x), (100 + 50*i, 111 + 85 + 163*x), 3)
-    cointxt = globals.NORMAL_FONT.render('Coins: ' + str(globals.CURRENT_COIN_COUNT), 1, (255, 255, 255))
-    speedtxt = globals.NORMAL_FONT.render('Speed', 1, (255, 255, 255))
-    bspeedtxt = globals.NORMAL_FONT.render('Bullet Speed', 1, (255, 255, 255))
-    bdmgtxt  = globals.NORMAL_FONT.render('Bullet Damage', 1, (255, 255, 255))
-    reloadtxt = globals.NORMAL_FONT.render('Reload Time', 1, (255, 255, 255))
-    mctxt = globals.NORMAL_FONT.render('Mag. Capacity', 1, (255, 255, 255))
-    mreloadtxt = globals.NORMAL_FONT.render('Mag. Reload', 1, (255, 255, 255))
-    Game.WIN.blit(cointxt, (780, 30))
-    Game.WIN.blit(speedtxt, (50 + 95, 121))
-    Game.WIN.blit(bspeedtxt, (50 + 30, 121 + 163))
-    Game.WIN.blit(bdmgtxt, (50 + 15, 121 + 163 * 2))
-    Game.WIN.blit(reloadtxt, (550 + 25, 121))
-    Game.WIN.blit(mctxt, (550 + 10, 121 + 163))
-    Game.WIN.blit(mreloadtxt, (550 + 25, 121 + 163 * 2))
-    buttonProp(Game.BACK_BUTTON)
+        currentLevel = globals.UPGRADE_ATTRIBUTES[attribute][1]
+        for j in range(currentLevel + 1):
+            pygame.draw.rect(Game.WIN, (63, 159, 217), (leftMargin + padding + (attrSize + padding) * j, 100 + 80 * i + padding, attrSize, 50 - 2 * padding))
     pygame.display.update()
 
 def buttonProp(button):
@@ -164,7 +132,7 @@ while Game.CURRENT_STATE != globals.GAME_QUIT:
                         globals.CURRENT_COIN_COUNT -= globals.ATTRIBUTE_UPGRADE_COSTS[bspeedbar]
                         bspeedbar += 1
                     bupgrade = False
-        Store()
+        Game.renderStoreScreen()
         pos = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:

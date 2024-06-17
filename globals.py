@@ -11,7 +11,7 @@ STORE_STATE = 2
 
 pygame.font.init()
 LARGE_FONT_SIZE = 80
-NORMAL_FONT_SIZE = 50
+NORMAL_FONT_SIZE = 40
 STAT_FONT_SIZE = 30
 
 LARGE_FONT = pygame.font.SysFont('impact', LARGE_FONT_SIZE)
@@ -29,6 +29,16 @@ ATTRIBUTE_UPGRADE_COSTS = [5, 10, 15, 20, 25]
 
 WHITE = (255, 255, 255)
 BLACK = (0 ,0 ,0)
+
+# {ATR: [initial, current, increment]}
+UPGRADE_ATTRIBUTES = {
+    "SPEED": [6, 0, 2],
+    "HEALTH": [50, 3, 10],
+    "BLASTER SPEED": [6, 2, 3],
+    "BLASTER DAMAGE":[15, 0, 10],
+    "MAGAZINE CAPACITY": [6, 0, 2],
+    "MAGAZINE RELOAD": [10, 0, 5]
+}
 
 #===================== IMAGE PATHS =====================
 ASTEROID_IMAGE_PATHS = ['assets/Asteroid11.png', 'assets/Asteroid12.png',
