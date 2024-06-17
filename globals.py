@@ -11,9 +11,11 @@ STORE_STATE = 2
 
 pygame.font.init()
 LARGE_FONT_SIZE = 80
+NORMAL_FONT_SIZE = 50
 STAT_FONT_SIZE = 30
 
 LARGE_FONT = pygame.font.SysFont('impact', LARGE_FONT_SIZE)
+NORMAL_FONT = pygame.font.SysFont(None, NORMAL_FONT_SIZE)
 STAT_FONT = pygame.font.SysFont(None, STAT_FONT_SIZE)
 
 CURRENT_BEST_SCORE = 0

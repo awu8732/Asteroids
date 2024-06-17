@@ -26,22 +26,7 @@ starx = []
 stary = []
 
 #//////////////////////////////////////////////////////////////////////////functions
-
-def HomeScreen():
-    Game.WIN.fill((0, 0, 0))
-    for i in range(200):
-        pygame.draw.circle(Game.WIN, (255, 255, 255), (starx[i], stary[i]), 1)
-    Game.PLAY_BUTTON.draw(Game.WIN)
-    Game.STORE_BUTTON.draw(Game.WIN)
-    btext2 = globals.STAT_FONT.render('Best Score: ' + str(globals.CURRENT_BEST_SCORE), 1, (255, 255, 255))
-    Game.WIN.blit(btext2, (700, 10))
-    Game.WIN.blit(globals.LOGO_IMAGE, (136, 180))
-    displaycoins = globals.STAT_FONT.render('Coins: ' + str(globals.CURRENT_COIN_COUNT), 1, (255, 255, 255))
-    Game.WIN.blit(displaycoins, (700, 40))
-
 def Store():
-    Game.USER.speed = 8
-    bigfont = pygame.font.SysFont('comicsans', 50, True)
     Game.WIN.fill((139, 134, 130))
     Game.BACK_BUTTON.draw(Game.WIN)
     for p in range(3):
@@ -74,13 +59,13 @@ def Store():
         for i in range(5):
             pygame.draw.line(Game.WIN, (0, 0, 0), (600 + 50 * i, 111 + 142 + 163 * x), (600 + 50 * i, 111 + 85 + 163 * x), 3)
             pygame.draw.line(Game.WIN, (0, 0, 0), (100 + 50*i, 111 + 142 + 163*x), (100 + 50*i, 111 + 85 + 163*x), 3)
-    cointxt = bigfont.render('Coins: ' + str(globals.CURRENT_COIN_COUNT), 1, (255, 255, 255))
-    speedtxt = bigfont.render('Speed', 1, (255, 255, 255))
-    bspeedtxt = bigfont.render('Bullet Speed', 1, (255, 255, 255))
-    bdmgtxt  = bigfont.render('Bullet Damage', 1, (255, 255, 255))
-    reloadtxt = bigfont.render('Reload Time', 1, (255, 255, 255))
-    mctxt = bigfont.render('Mag. Capacity', 1, (255, 255, 255))
-    mreloadtxt = bigfont.render('Mag. Reload', 1, (255, 255, 255))
+    cointxt = globals.NORMAL_FONT.render('Coins: ' + str(globals.CURRENT_COIN_COUNT), 1, (255, 255, 255))
+    speedtxt = globals.NORMAL_FONT.render('Speed', 1, (255, 255, 255))
+    bspeedtxt = globals.NORMAL_FONT.render('Bullet Speed', 1, (255, 255, 255))
+    bdmgtxt  = globals.NORMAL_FONT.render('Bullet Damage', 1, (255, 255, 255))
+    reloadtxt = globals.NORMAL_FONT.render('Reload Time', 1, (255, 255, 255))
+    mctxt = globals.NORMAL_FONT.render('Mag. Capacity', 1, (255, 255, 255))
+    mreloadtxt = globals.NORMAL_FONT.render('Mag. Reload', 1, (255, 255, 255))
     Game.WIN.blit(cointxt, (780, 30))
     Game.WIN.blit(speedtxt, (50 + 95, 121))
     Game.WIN.blit(bspeedtxt, (50 + 30, 121 + 163))
@@ -137,7 +122,7 @@ while Game.CURRENT_STATE != globals.GAME_QUIT:
 
     if Game.CURRENT_STATE == globals.HOME_STATE:
         pos = pygame.mouse.get_pos()
-        HomeScreen()
+        Game.renderHomeScreen()
         buttonProp(Game.PLAY_BUTTON)
         buttonProp(Game.STORE_BUTTON)
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -205,7 +190,7 @@ while Game.CURRENT_STATE != globals.GAME_QUIT:
             Game.USER.ammo -= 2
 
         Game.WIN.blit(globals.BACKGROUND_IMAGE, (0, 0))
-        Game.renderInGameElements()
+        Game.renderGameScreen()
 
         renderAmmoBar()
         Game.updateOnscreenUIElements()

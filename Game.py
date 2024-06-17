@@ -57,7 +57,23 @@ def handleUserDeath():
     pygame.display.update()
     pauseScreen()
 
-def renderInGameElements():
+def renderHomeScreen():
+    WIN.fill((0, 0, 0))
+
+    # for i in range(200):
+    #     pygame.draw.circle(WIN, (255, 255, 255), (starx[i], stary[i]), 1)
+    
+    #render buttons and logo
+    PLAY_BUTTON.draw(WIN)
+    STORE_BUTTON.draw(WIN)
+    WIN.blit(globals.LOGO_IMAGE, (136, 180))
+    #render game stats
+    bestScoreText = globals.STAT_FONT.render('Best Score: ' + str(globals.CURRENT_BEST_SCORE), 1, (255, 255, 255))
+    WIN.blit(bestScoreText, (globals.GAME_WINDOW_WIDTH - 200, 10))
+    coinText = globals.STAT_FONT.render('Coins: ' + str(globals.CURRENT_COIN_COUNT), 1, (255, 255, 255))
+    WIN.blit(coinText, (globals.GAME_WINDOW_WIDTH - 200, 40))
+
+def renderGameScreen():
     #render background
     WIN.blit(globals.BACKGROUND_IMAGE, (0, 0))
 
