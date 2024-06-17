@@ -26,23 +26,6 @@ starx = []
 stary = []
 
 #//////////////////////////////////////////////////////////////////////////functions
-def Store():
-    Game.WIN.fill((127, 137, 143))
-    Game.BACK_BUTTON.draw(Game.WIN)
-
-    leftMargin = globals.GAME_WINDOW_WIDTH/10
-    padding = 5
-    attrSize = 60
-    for i, attribute in enumerate(globals.UPGRADE_ATTRIBUTES):
-        attributeText = globals.NORMAL_FONT.render(attribute , 1, globals.WHITE)
-        Game.WIN.blit(attributeText, (leftMargin, 75 + 80 * i))
-        pygame.draw.rect(Game.WIN, globals.WHITE, (leftMargin, 100 + 80 * i, globals.GAME_WINDOW_WIDTH*2/3, 50))
-        globals.UPGRADE_ATTRIBUTES[attribute][3].draw(Game.WIN)
-
-        currentLevel = globals.UPGRADE_ATTRIBUTES[attribute][1]
-        for j in range(currentLevel + 1):
-            pygame.draw.rect(Game.WIN, (63, 159, 217), (leftMargin + padding + (attrSize + padding) * j, 100 + 80 * i + padding, attrSize, 50 - 2 * padding))
-    pygame.display.update()
 
 def buttonProp(button):
     if event.type == pygame.MOUSEBUTTONDOWN:
